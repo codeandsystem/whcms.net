@@ -64,7 +64,7 @@ namespace Agile.Whcms
         private T _Execute<T>(IRestRequest request) where T : new()
         {
             IRestResponse<T> response = _client.Execute<T>(request);
-            if(response.StatusCode != HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.OK)
                 throw new WebException(response.StatusDescription);
 
             if (response.ErrorException != null)
@@ -168,7 +168,14 @@ namespace Agile.Whcms
             GetInvoicesResponse response = _Execute<GetInvoicesResponse>(request);
             return response;
         }
-        public GetInvoiceResponse GetInvoice() { throw new NotImplementedException(); }
+
+        public GetInvoiceResponse GetInvoice(int invoiceId)
+        {
+            RestRequest request = _CreateRequest("getinvoice");
+            request.AddParameter("invoiceid", invoiceId);
+            return _Execute<GetInvoiceResponse>(request);
+
+        }
         public CreateInvoiceResponse CreateInvoice() { throw new NotImplementedException(); }
         public UpdateInvoiceResponse UpdateInvoice() { throw new NotImplementedException(); }
         public AddInvoicePaymentResponse AddInvoicePayment() { throw new NotImplementedException(); }
@@ -383,7 +390,7 @@ namespace Agile.Whcms
         [XmlElement("numreturned")]
         public int NumReturned { get; set; }
 
-      
+
         [XmlArray("invoices")]
         [XmlArrayItem("invoice")]
         public List<Invoice> Invoices { get; set; }
@@ -406,7 +413,7 @@ namespace Agile.Whcms
         [XmlElement("datepaid")]
 
         public string Datepaid { get; set; }
-             [XmlElement("duedate")]
+        [XmlElement("duedate")]
         public string DueDate
         {
             get;
@@ -480,7 +487,27 @@ namespace Agile.Whcms
 
     public class AddProductResponse { }
 
-    public class GetInvoiceResponse { }
+    public class GetInvoiceResponse : Invoice
+    {
+        [XmlArray("items")]
+        public List<InvoiceLine> Lines { get; set; }
+    }
+
+    public class InvoiceLine
+    {
+        [XmlElement("id")]
+        public int Id { get; set; }
+        [XmlElement("domain")]
+        public string Domain { get; set; }
+        [XmlElement("relid")]
+        public int RelId { get; set; }
+        [XmlElement("description")]
+        public string Description { get; set; }
+        [XmlElement("amount")]
+        public float Amount { get; set; }
+        [XmlElement("taxed")]
+        public int Taxed { get; set; }
+    }
 
     public class UpdateToDoItemResponse { }
 
